@@ -3,7 +3,7 @@ import numpy as np
 import time
 
 # Load Yolo
-net = cv2.dnn.readNet("yolov4-obj_best.weights", "yolov4.cfg")
+net = cv2.dnn.readNet("custom-yolov4-tiny-detector_7000.weights", "custom-yolov4-tiny-detector.cfg")
 classes = []
 with open("coco.names", "r") as f:
     classes = [line.strip() for line in f.readlines()]
@@ -14,7 +14,7 @@ colors = np.random.uniform(0, 255, size=(len(classes), 3))
 # Loading image
 cap = cv2.VideoCapture(6)
 
-font = cv2.FONT_HERSHEY_PLAIN
+font = cv2.FONT_HERSHEY_SIMPLEX
 starting_time = time.time()
 frame_id = 0
 while True:
@@ -53,7 +53,7 @@ while True:
                 confidences.append(float(confidence))
                 class_ids.append(class_id)
 
-    indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.8, 0.3)
+    indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.6, 0.3)
 
     for i in range(len(boxes)):
         if i in indexes:
@@ -62,13 +62,13 @@ while True:
             confidence = confidences[i]
             color = colors[class_ids[i]]
             cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
-            cv2.putText(frame, label + " " + str(round(confidence, 2)), (x, y + 30), font, 3, color, 3)
+            cv2.putText(frame, label + " " + str(round(confidence, 2)), (x, y + 30), font, 2, color, 3)
 
 
 
     elapsed_time = time.time() - starting_time
     fps = frame_id / elapsed_time
-    cv2.putText(frame, "FPS: " + str(round(fps, 2)), (10, 50), font, 4, (0, 0, 0), 3)
+    cv2.putText(frame, "FPS: " + str(round(fps, 2)), (10, 50), font, 2, (0, 0, 0), 3)
     cv2.imshow("Image", frame)
     key = cv2.waitKey(1)
     if key == 27:
